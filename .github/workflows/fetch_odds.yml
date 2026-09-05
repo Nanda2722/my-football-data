@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Fetch JSON with Live Account Token
         run: |
-          # ://555mix.com ဟု အောက်တွင် လိပ်စာအမှန် ပြင်ဆင်ထားပါသည်
+          # ://555mix.com ဟု လိပ်စာအမှန် ပြင်ဆင်ထားပါသည်
           curl -s "https://://555mix.com/v1/singlebet" \
             -H "Authorization: Bearer ${{ secrets.MY_555MIX_TOKEN }}" > singlebet.json
           
