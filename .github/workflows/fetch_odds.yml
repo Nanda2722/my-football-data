@@ -8,17 +8,17 @@ jobs:
   fetch-and-update:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch JSON with Live Account Cookie
+      - name: Fetch JSON with Live Account Token
         run: |
-          # 555mix ၏ API Link များကို ဤနေရာတွင် အသုံးပြုထားပါသည်
-          curl -s "https://555mix.com" \
-            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > singlebet.json
+          # ://555mix.com ဟု အောက်တွင် လိပ်စာအမှန် ပြင်ဆင်ထားပါသည်
+          curl -s "https://://555mix.com/v1/singlebet" \
+            -H "Authorization: Bearer ${{ secrets.MY_555MIX_TOKEN }}" > singlebet.json
           
-          curl -s "https://555mix.com" \
-            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > all.json
+          curl -s "https://://555mix.com/v1/all" \
+            -H "Authorization: Bearer ${{ secrets.MY_555MIX_TOKEN }}" > all.json
 
-          curl -s "https://555mix.com" \
-            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > livescore.json
+          curl -s "https://://555mix.com/v1/livescore" \
+            -H "Authorization: Bearer ${{ secrets.MY_555MIX_TOKEN }}" > livescore.json
           
       - name: Send Data to Supabase
         env:
