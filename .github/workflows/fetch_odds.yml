@@ -1,0 +1,34 @@
+name: Auto Fetch 555mix Data
+on:
+  schedule:
+    - cron: '*/20 * * * *' # မိနစ် ၂၀ တစ်ကြိမ် တိတိ အလိုအလျောက် အလုပ်လုပ်မည်
+  workflow_dispatch: # စမ်းသပ်ချင်ရင် လူကိုယ်တိုင် ခလုတ်နှိပ်ပြီး မောင်းနိုင်ရန်
+
+jobs:
+  fetch-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch JSON with Live Account Cookie
+        run: |
+          # 555mix ၏ API Link များကို ဤနေရာတွင် အသုံးပြုထားပါသည်
+          curl -s "https://555mix.com" \
+            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > singlebet.json
+          
+          curl -s "https://555mix.com" \
+            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > all.json
+
+          curl -s "https://555mix.com" \
+            -H "Cookie: ${{ secrets.MY_555MIX_COOKIE }}" > livescore.json
+          
+      - name: Send Data to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          # ရလာသော JSON သုံးခုလုံးကို Supabase ရှိ id: 1 ထဲသို့ အတင်းသွင်းခြင်း
+          curl -X POST "$SUPABASE_URL/rest/v1/odds_storage" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: resolution=merge-duplicates" \
+            -d "{\"id\": 1, \"singlebet_data\": $(cat singlebet.json), \"all_data\": $(cat all.json), \"livescore_data\": $(cat livescore.json), \"updated_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
